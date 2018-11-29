@@ -55,8 +55,16 @@ API is enabled, then create your key on the page `Cryptographic Keys`, which you
 To see how to connect to the Vault cluster, initialize it, and start reading and writing secrets, head over to the
 [How do you use the Vault cluster?](https://github.com/hashicorp/terraform-google-vault/tree/master/modules/vault-cluster#how-do-you-use-the-vault-cluster) docs.
 
-## Applying your Vault Enterprise license
+## SShing to the cluster?
 
+## Applying your Vault Enterprise license
 * Follow the steps in [Quick Start](#quick-start) to launch your Vault cluster.
+* Ssh to one of the instances
 * Set an environment variable `VAULT_ENTERPRISE_LICENSE_KEY` with your license key.
 * Run `apply-license.sh`.
+
+## Cloud KMS Scopes
+
+## Vault Auto-Unseal
+
+## Vault Auto-Unseal on GCP

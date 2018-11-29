@@ -151,8 +151,10 @@ func assertAllNodesBooted(t *testing.T, cluster *VaultCluster, bastionHost *ssh.
 
 // Initialize the Vault cluster, filling in the unseal keys in the given vaultCluster struct
 func initializeVault(t *testing.T, vaultCluster *VaultCluster, bastionHost *ssh.Host) {
-	output := retry.DoWithRetry(t, "Initializing the cluster", 10, 10*time.Second, func() (string, error) {
-		return runCommand(t, bastionHost, &vaultCluster.Leader, "vault operator init")
+	output := retry.DoWithRetry(t, "Initializing the cluster", 5, 5*time.Second, func() (string, error) {
+		output, _ := runCommand(t, bastionHost, &vaultCluster.Leader, "vault operator init")
+		logger.Logf(t, "Vault init outout: %s", output)
+		return output
 	})
 	vaultCluster.UnsealKeys = parseUnsealKeysFromVaultInitResponse(t, output)
 }
@@ -209,8 +211,8 @@ func parseUnsealKeysFromVaultInitResponse(t *testing.T, vaultInitResponse string
 // Check that the given Vault node has the given status
 func assertNodeStatus(t *testing.T, host ssh.Host, bastionHost *ssh.Host, expectedStatus VaultStatus) {
 
-	maxRetries := 30
-	sleepBetweenRetries := 10 * time.Second
+	maxRetries := 5
+	sleepBetweenRetries := 5 * time.Second
 	description := fmt.Sprintf("Check that the Vault node %s has status %d", host.Hostname, int(expectedStatus))
 
 	out := retry.DoWithRetry(t, description, maxRetries, sleepBetweenRetries, func() (string, error) {
@@ -228,7 +230,7 @@ func checkStatus(t *testing.T, host ssh.Host, bastionHost *ssh.Host, expectedSta
 
 	output, err := runCommand(t, bastionHost, &host, curlCommand)
 	if err != nil {
-		return "", err
+		return output, err
 	}
 	status, err := strconv.Atoi(output)
 	if err != nil {

@@ -29,8 +29,8 @@ resource "google_compute_subnetwork" "private_subnet_with_google_api_access" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
-# DEPLOY A BASTION HOST THAT CAN REACH THE CLUSTER
-# We can't ssh directly to the cluster because they don't have an external IP
+# DEPLOYS A BASTION HOST THAT CAN REACH THE CLUSTER
+# We can't ssh directly to the clusters because they don't have an external IP
 # address, but we can ssh to a bastion host inside the same subnet and then
 # access the cluster
 # ---------------------------------------------------------------------------------------------------------------------
@@ -107,7 +107,7 @@ module "vault_cluster" {
   # To access to the Vault Cluster from other resources inside Google Cloud,
   # add their tags below, along with the Consul Server, which needs to send
   # health checks to the Vault cluster.
-  allowed_inbound_tags_api = ["${concat(var.consul_server_cluster_name, var.additional_allowed_inbound_tags_api)}"]
+  allowed_inbound_tags_api = ["${concat(list(var.consul_server_cluster_name), var.additional_allowed_inbound_tags_api)}"]
 
   # This property is only necessary when using a Load Balancer
   instance_group_target_pools = ["${module.vault_load_balancer.target_pool_url}"]
@@ -125,16 +125,11 @@ data "template_file" "startup_script_vault" {
     vault_cluster_tag_name  = "${var.vault_cluster_name}"
     web_proxy_port          = "${var.web_proxy_port}"
 
-    # Enable the Vault Enterprise Auto Unseal feature. If using this feature then you must also supply a license key.
-    vault_auto_unseal_project_id = "${var.vault_auto_unseal_project_id}"
-    vault_auto_unseal_region     = "${var.vault_auto_unseal_region}"
+    # Enable the Vault Enterprise Auto Unseal feature.
+    vault_auto_unseal_key_project_id = "${var.vault_auto_unseal_key_project_id}"
+    vault_auto_unseal_key_region     = "${var.vault_auto_unseal_key_region}"
     vault_auto_unseal_key_ring   = "${var.vault_auto_unseal_key_ring}"
-    vault_auto_unseal_crypto_key = "${var.vault_auto_unseal_crypto_key}"
-    vault_enterprise_license_key = "${file("vault-license.hclic")}"
-
-    # Please note that normally we would never pass a secret this way
-    # This is just for test purposes so we can verify that our example instance is authenticating correctly
-    example_secret = "${var.example_secret}"
+    vault_auto_unseal_crypto_key_name = "${var.vault_auto_unseal_crypto_key_name}"
   }
 }
 
@@ -164,7 +159,6 @@ module "consul_cluster" {
 
   subnetwork_name = "${google_compute_subnetwork.private_subnet_with_google_api_access.name}"
 
-  gcp_project_id = "${var.gcp_project_id}"
   gcp_region     = "${var.gcp_region}"
 
   cluster_name     = "${var.consul_server_cluster_name}"

@@ -8,11 +8,11 @@ variable "gcp_project_id" {
 }
 
 variable "gcp_region" {
-  description = "The region in which all GCP resources will be launched."
+  description = "The Region in which all GCP resources will be launched."
 }
 
-variable "gcp_zone" {
-  description = "The region in which all GCP resources will be launched."
+variable "bastion_server_name" {
+  description = "The name of the bastion server that can reach the private vault cluster"
 }
 
 variable "vault_cluster_name" {
@@ -41,11 +41,11 @@ variable "consul_server_machine_type" {
 
 # Vault Auto Unseal Variables
 
-variable "vault_auto_unseal_project_id" {
+variable "vault_auto_unseal_key_project_id" {
   description = "The GCP Project ID to use for the Auto Unseal feature."
 }
 
-variable "vault_auto_unseal_region" {
+variable "vault_auto_unseal_key_region" {
   description = "The GCP Region to use for the Auto Unseal feature."
 }
 
@@ -53,12 +53,8 @@ variable "vault_auto_unseal_key_ring" {
   description = "The GCP Cloud KMS Key Ring to use for the Auto Unseal feature."
 }
 
-variable "vault_auto_unseal_crypto_key" {
+variable "vault_auto_unseal_crypto_key_name" {
   description = "The GCP Cloud KMS Crypto Key to use for the Auto Unseal feature. Note: if creating a new key using var.create_kms_crypto_key then use this key."
-}
-
-variable "example_secret" {
-  description = "Example secret to be written into Vault server"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -66,30 +62,20 @@ variable "example_secret" {
 # These parameters have reasonable defaults.
 # ---------------------------------------------------------------------------------------------------------------------
 
-variable "additional_allowed_inbound_tags_api" {
-   type = "list"
-   description = "A list of additional tags that GCP project resources can have to be permitted access to the Vault API."
-   default  = []
-}
-
-variable "kms_crypto_key_name" {
-  description = "The name of the Cloud KMS crypto key. This parameter is required if var.create_kms_crypto_key is set to true."
-  default     = ""
-}
-
-variable "kms_crypto_key_ring_name" {
-  description = "The id of the Google Cloud Platform Key Ring to which the key shall belong. This parameter is required if var.create_kms_crypto_key is set to true."
-  default     = ""
-}
-
-variable "kms_crypto_key_rotation_period" {
-  description = "The time period that specifies how frequently the Cloud KMS key rotates. This parameter is required if var.create_kms_crypto_key is set to true."
-  default     = "100000s"
+variable "network_name" {
+  description = "The name of the VPC Network where all resources should be created."
+  default     = "default"
 }
 
 variable "cloud_kms_scope" {
   description = ""
   default     = "https://www.googleapis.com/auth/cloudkms"
+}
+
+variable "additional_allowed_inbound_tags_api" {
+   type = "list"
+   description = "A list of additional tags that GCP project resources can have to be permitted access to the Vault API."
+   default  = []
 }
 
 variable "gcs_bucket_location" {
@@ -130,4 +116,9 @@ variable "root_volume_disk_size_gb" {
 variable "root_volume_disk_type" {
   description = "The GCE disk type. Can be either pd-ssd, local-ssd, or pd-standard"
   default     = "pd-standard"
+}
+
+variable "enable_vault_ui" {
+  description = "If true, enable the Vault UI"
+  default     = true
 }

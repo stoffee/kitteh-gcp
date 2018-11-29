@@ -17,7 +17,7 @@ import (
 
 const TFVAR_NAME_BASTION_SERVER_NAME = "bastion_server_name"
 
-func runVaultPrivateClusterTest(t *testing.T, osName string) {
+func runVaultPrivateClusterTest(t *testing.T) {
 	exampleDir := test_structure.CopyTerraformFolderToTemp(t, "../", "examples/vault-cluster-private")
 
 	defer test_structure.RunTestStage(t, "teardown", func() {

@@ -18,23 +18,23 @@ const (
 )
 
 type testCase struct {
-	Name string                   // Name of the test
-	Func func(*testing.T, string) // Function that runs test. Receives(t, packerOsName)
+	Name string           // Name of the test
+	Func func(*testing.T) // Function that runs the test
 }
 
 var testCases = []testCase{
-	{
-		"TestVaultPrivateCluster",
-		runVaultPrivateClusterTest,
-	},
-	{
-		"TestVaultPublicCluster",
-		runVaultPublicClusterTest,
-	},
 	// {
-	// 	"TestVaultEnterpriseClusterAutoUnseal",
+	// 	"TestVaultPrivateCluster",
+	// 	runVaultPrivateClusterTest,
+	// },
+	// {
+	// 	"TestVaultPublicCluster",
 	// 	runVaultPublicClusterTest,
 	// },
+	{
+		"TestVaultEnterpriseClusterAutoUnseal",
+		runVaultEnterpriseClusterTest,
+	},
 }
 
 func TestMainVaultCluster(t *testing.T) {
@@ -55,12 +55,12 @@ func TestMainVaultCluster(t *testing.T) {
 		saveTLSCert(t, WORK_DIR, tlsCert)
 
 		packerImageOptions := map[string]*packer.Options{
-			SAVED_OPEN_SOURCE_VAULT_IMAGE: composeImageOptions(t, PACKER_BUILD_NAME, WORK_DIR, ""),
-			SAVED_ENTERPRISE_VAULT_IMAGE:  composeImageOptions(t, PACKER_BUILD_NAME, WORK_DIR, vaultDownloadUrl),
+			//	SAVED_OPEN_SOURCE_VAULT_IMAGE: composeImageOptions(t, PACKER_BUILD_NAME, WORK_DIR, ""),
+			SAVED_ENTERPRISE_VAULT_IMAGE: composeImageOptions(t, PACKER_BUILD_NAME, WORK_DIR, vaultDownloadUrl),
 		}
 
 		imageIds := packer.BuildArtifacts(t, packerImageOptions)
-		test_structure.SaveString(t, WORK_DIR, SAVED_OPEN_SOURCE_VAULT_IMAGE, imageIds[SAVED_OPEN_SOURCE_VAULT_IMAGE])
+		//test_structure.SaveString(t, WORK_DIR, SAVED_OPEN_SOURCE_VAULT_IMAGE, imageIds[SAVED_OPEN_SOURCE_VAULT_IMAGE])
 		test_structure.SaveString(t, WORK_DIR, SAVED_ENTERPRISE_VAULT_IMAGE, imageIds[SAVED_ENTERPRISE_VAULT_IMAGE])
 	})
 
@@ -91,7 +91,7 @@ func runAllTests(t *testing.T) {
 		testCase := testCase
 		t.Run(fmt.Sprintf("%sWithUbuntu", testCase.Name), func(t *testing.T) {
 			t.Parallel()
-			testCase.Func(t, PACKER_BUILD_NAME)
+			testCase.Func(t)
 		})
 	}
 }
