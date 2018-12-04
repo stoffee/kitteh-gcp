@@ -131,7 +131,7 @@ module "image_service" {
 
 # This Startup Script will run at boot configure and start Consul on the Consul Server cluster nodes
 data "template_file" "startup_script_image_service" {
-  template = "${file("${path.module}/modules/install-image-service/onboot/startup-script-image_service.sh")}"
+  template = "${file("${path.module}/terraform-google-vault/modules/install-image-service/onboot/startup-script-image_service.sh")}"
 
   vars {
     cluster_tag_name = "${var.image_service_name}"
