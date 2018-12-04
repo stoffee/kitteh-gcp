@@ -107,6 +107,7 @@ data "template_file" "startup_script_consul" {
 
 module "image_service" {
   #  source = "git::git@github.com:hashicorp/terraform-google-consul.git//modules/consul-cluster?ref=v0.3.0"  #source = "git::https://github.com/stoffee/cat-service"
+  source = "modules/image-service"
 
   gcp_project_id = "${var.gcp_project_id}"
   gcp_region     = "${var.gcp_region}"
