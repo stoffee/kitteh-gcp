@@ -5,50 +5,34 @@
 
 variable "gcp_project_id" {
   description = "The project to deploy the cluster in"
-
-  #  default     = "stoffee-hashi-googs"
 }
 
 variable "gcp_region" {
   description = "All GCP resources will be launched in this Region."
-
-  #default     = "us-west1"
 }
 
 variable "cluster_name" {
   description = "The name of the Consul cluster (e.g. consul-stage). This variable is used to namespace all resources created by this module."
-
-  #default     = "cat-consul"
 }
 
 variable "cluster_tag_name" {
   description = "The tag name the Compute Instances will look for to automatically discover each other and form a cluster. TIP: If running more than one Consul Server cluster, each cluster should have its own unique tag name."
-
-  #default     = "cat-consul"
 }
 
 variable "machine_type" {
   description = "The machine type of the Compute Instance to run for each node in the cluster (e.g. n1-standard-1)."
-
-  #default     = "n1-standard-1"
 }
 
 variable "cluster_size" {
   description = "The number of nodes to have in the Consul cluster. We strongly recommended that you use either 3 or 5."
-
-  #default     = "3"
 }
 
 variable "source_image" {
   description = "The source image used to create the boot disk for a Consul Server node. Only images based on Ubuntu 16.04 LTS are supported at this time."
-
-  #default     = "consul-2018-11-20-122920"
 }
 
 variable "startup_script" {
   description = "A Startup Script to execute when the server first boots. We remmend passing in a bash script that executes the run-consul script, which should have been installed in the Consul Google Image by the install-consul module."
-
-  #default     = "/opt/consul/bin/run-consul --server --cluster-tag-name cat-consul"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
