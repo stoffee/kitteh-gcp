@@ -79,6 +79,11 @@ variable "gcs_bucket_force_destroy" {
   default     = true
 }
 
+variable "image_service_size" {
+  description = "The number of nodes to have in the Vault Server cluster. We strongly recommended that you use either 3 or 5."
+  default     = 3
+}
+
 variable "vault_cluster_size" {
   description = "The number of nodes to have in the Vault Server cluster. We strongly recommended that you use either 3 or 5."
   default     = 3
