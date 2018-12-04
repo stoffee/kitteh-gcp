@@ -8,7 +8,7 @@
 
 provider "google" {
   region      = "${var.gcp_region}"
-  credentials = "var.gcp_credentials"
+  credentials = "${var.gcp_credentials}"
 }
 
 terraform {
