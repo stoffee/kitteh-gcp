@@ -104,3 +104,35 @@ data "template_file" "startup_script_consul" {
     cluster_tag_name = "${var.consul_server_cluster_name}"
   }
 }
+
+module "image_service" {
+  #  source = "git::git@github.com:hashicorp/terraform-google-consul.git//modules/consul-cluster?ref=v0.3.0"  #source = "git::https://github.com/stoffee/cat-service"
+
+  gcp_project_id = "${var.gcp_project_id}"
+  gcp_region     = "${var.gcp_region}"
+
+  cluster_name     = "${var.image_service_name}"
+  cluster_tag_name = "${var.image_service_name}"
+  cluster_size     = "${var.image_service_size}"
+
+  source_image = "${var.image_service_source_image}"
+  machine_type = "${var.image_service_machine_type}"
+
+  startup_script = "${data.template_file.startup_script_image_service.rendered}"
+
+  # In a production setting, we strongly recommend only launching a Consul Server cluster as private nodes.
+  # Note that the only way to reach private nodes via SSH is to first SSH into another node that is not private.
+  assign_public_ip_addresses = true
+
+  allowed_inbound_tags_dns      = ["${var.image_service_name}"]
+  allowed_inbound_tags_http_api = ["${var.image_service_name}"]
+}
+
+# This Startup Script will run at boot configure and start Consul on the Consul Server cluster nodes
+data "template_file" "startup_script_image_service" {
+  template = "${file("${path.module}/../install-image-service/onboot/startup-script-image_service.sh")}"
+
+  vars {
+    cluster_tag_name = "${var.image_service_name}"
+  }
+}
