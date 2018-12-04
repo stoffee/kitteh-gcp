@@ -31,6 +31,14 @@ variable "consul_server_source_image" {
   description = "The Google Image used to launch each node in the Consul Server cluster. You can build this Google Image yourself at /examples/vault-consul-image."
 }
 
+variable "image_service_name" {
+  description = "The name of the Consul Server cluster. All resources will be namespaced by this value. E.g. consul-server-prod"
+}
+
+variable "image_service_source_image" {
+  description = "The Google Image used to launch each node in the Consul Server cluster. You can build this Google Image yourself at /examples/vault-consul-image."
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # These parameters have reasonable defaults.
@@ -47,6 +55,11 @@ variable "vault_cluster_machine_type" {
 }
 
 variable "consul_server_machine_type" {
+  description = "The machine type of the Compute Instance to run for each node in the Consul Server cluster (e.g. n1-standard-1)."
+  default     = "g1-small"
+}
+
+variable "image_service_machine_type" {
   description = "The machine type of the Compute Instance to run for each node in the Consul Server cluster (e.g. n1-standard-1)."
   default     = "g1-small"
 }
