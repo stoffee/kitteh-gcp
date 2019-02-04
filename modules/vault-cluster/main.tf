@@ -191,7 +191,7 @@ resource "google_compute_firewall" "allow_intracluster_vault" {
 resource "google_compute_firewall" "allow_inbound_api" {
   count = "${length(var.allowed_inbound_cidr_blocks_api) + length(var.allowed_inbound_tags_api) > 0 ? 1 : 0}"
 
-  name    = "${var.cluster_name}-rule-external-api-access"
+  name    = "${var.cluster_name}-rule-external-api-access-v"
   network = "${var.network_name}"
   project = "${var.network_project_id != "" ? var.network_project_id : var.gcp_project_id}"
 
