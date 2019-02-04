@@ -167,7 +167,7 @@ resource "google_compute_instance_template" "vault_private" {
 # - This Firewall Rule may be redundant depending on the settings of your VPC Network, but if your Network is locked down,
 #   this Rule will open up the appropriate ports.
 resource "google_compute_firewall" "allow_intracluster_vault" {
-  name    = "${var.cluster_name}-rule-cluster"
+  name    = "${var.cluster_name}-rule-cluster-v"
   network = "${var.network_name}"
   project = "${var.network_project_id != "" ? var.network_project_id : var.gcp_project_id}"
 
