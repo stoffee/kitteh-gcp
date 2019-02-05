@@ -34,6 +34,10 @@ module "vault_cluster" {
   cluster_tag_name = "${var.vault_cluster_name}"
   machine_type     = "${var.vault_cluster_machine_type}"
 
+  crypto_key       = "${var.crypto_key}"
+  keyring_location = "${var.keyring_location}"
+  key_ring         = "${var.key_ring}"
+
   source_image   = "${var.vault_source_image}"
   startup_script = "${data.template_file.startup_script_vault.rendered}"
 
