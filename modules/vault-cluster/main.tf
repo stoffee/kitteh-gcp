@@ -55,7 +55,7 @@ resource "google_compute_instance_template" "vault_private" {
   machine_type         = "${var.machine_type}"
 
   tags                    = ["${concat(list(var.cluster_tag_name), var.custom_tags)}"]
-  metadata_startup_script = "${var.startup_script}"
+  #metadata_startup_script = "${var.startup_script}"
   metadata                = "${merge(map(var.metadata_key_name_for_cluster_size, var.cluster_size), var.custom_metadata)}"
 
   scheduling {
@@ -85,6 +85,10 @@ resource "google_compute_instance_template" "vault_private" {
   }
 
   metadata_startup_script = <<SCRIPT
+    readonly VAULT_TLS_CERT_FILE="/opt/vault/tls/vault.crt.pem"
+    readonly VAULT_TLS_KEY_FILE="/opt/vault/tls/vault.key.pem"
+    /opt/consul/bin/run-consul --client --cluster-tag-name "${var.consul_cluster_tag_name}"
+    /opt/vault/bin/run-vault --gcs-bucket ${var.vault_cluster_tag_name} --tls-cert-file "$VAULT_TLS_CERT_FILE"  --tls-key-file "$VAULT_TLS_KEY_FILE$/opt/vault/tls/vault.key.pem
     sudo touch /tmp/shitHEAD
     sudo mkdir -p /test/vault
     sudo echo -e '[Unit]\nDescription="HashiCorp Vault - A tool for managing secrets"\nDocumentation=https://www.vaultproject.io/docs/\nRequires=network-online.target\nAfter=network-online.target\n\n[Service]\nExecStart=/usr/bin/vault server -config=/test/vault/config.hcl\nExecReload=/bin/kill -HUP $MAINPID\nKillMode=process\nKillSignal=SIGINT\nRestart=on-failure\nRestartSec=5\n\n[Install]\nWantedBy=multi-user.target\n' > /lib/systemd/system/vault.service
