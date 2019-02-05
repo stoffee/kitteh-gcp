@@ -137,14 +137,16 @@ resource "google_compute_instance_template" "vault_private" {
     subnetwork_project = "${var.network_project_id != "" ? var.network_project_id : var.gcp_project_id}"
   }
 
-  # For a full list of oAuth 2.0 Scopes, see https://developers.google.com/identity/protocols/googlescopes
+# For a full list of oAuth 2.0 Scopes, see https://developers.google.com/identity/protocols/googlescopes
   service_account {
-    email = "${var.service_account.email}"
+    email = "${local.service_account_email}"
 
-    scopes = ["cloud-platform", "compute-rw", "storage-ro", "${concat(
+    scopes = ["${concat(
       list(
         "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/devstorage.read_write"
+        "https://www.googleapis.com/auth/compute",
+        "https://www.googleapis.com/auth/devstorage.read_write",
+        "https://www.googleapis.com/auth/cloud-platform",
       ),
       var.service_account_scopes
     )}"]
