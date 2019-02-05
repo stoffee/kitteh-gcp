@@ -63,7 +63,7 @@ module "vault_cluster" {
 
 # Render the Startup Script that will run on each Vault Instance on boot. This script will configure and start Vault.
 data "template_file" "startup_script_vault" {
-  template = "${file("${path.module}/examples/root-example/startup-script-vault.sh")}"
+  template = "${file("${path.module}/modules/vault_cluster/startup-script-vault.sh")}"
 
   vars {
     consul_cluster_tag_name = "${var.consul_server_cluster_name}"
@@ -91,7 +91,7 @@ module "consul_cluster" {
   source_image = "${var.consul_server_source_image}"
   machine_type = "${var.consul_server_machine_type}"
 
-  startup_script = "${data.template_file.startup_script_consul.rendered}"
+  #startup_script = "${data.template_file.startup_script_consul.rendered}"
 
   # In a production setting, we strongly recommend only launching a Consul Server cluster as private nodes.
   # Note that the only way to reach private nodes via SSH is to first SSH into another node that is not private.
@@ -102,13 +102,13 @@ module "consul_cluster" {
 }
 
 # This Startup Script will run at boot configure and start Consul on the Consul Server cluster nodes
-data "template_file" "startup_script_consul" {
-  template = "${file("${path.module}/examples/root-example/startup-script-consul.sh")}"
-
-  vars {
-    cluster_tag_name = "${var.consul_server_cluster_name}"
-  }
-}
+#data "template_file" "startup_script_consul" {
+#  template = "${file("${path.module}/examples/root-example/startup-script-consul.sh")}"
+#
+#  vars {
+#    cluster_tag_name = "${var.consul_server_cluster_name}"
+#  }
+#}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # DEPLOY THE NOMAD SERVER NODES
