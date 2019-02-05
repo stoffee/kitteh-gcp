@@ -158,7 +158,6 @@ resource "google_compute_instance_template" "vault_private" {
     sudo systemctl enable vault
     sudo systemctl start vault
   SCRIPT
-}
 
   # Per Terraform Docs (https://www.terraform.io/docs/providers/google/r/compute_instance_template.html#using-with-instance-group-manager),
   # we need to create a new instance template before we can destroy the old one. Note that any Terraform resource on
@@ -190,6 +189,7 @@ resource "google_kms_key_ring_iam_binding" "vault_iam_kms_binding" {
    members = [
      "serviceAccount:${google_service_account.vault_kms_service_account.email}",
    ]
+}
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
