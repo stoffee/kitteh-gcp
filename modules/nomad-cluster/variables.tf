@@ -145,3 +145,7 @@ variable "root_volume_disk_type" {
   description = "The GCE disk type. Can be either pd-ssd, local-ssd, or pd-standard"
   default = "pd-standard"
 }
+
+variable "nomad_server_source_image" {
+  description = "The Google Image used to launch each node in the Nomad Server cluster."
+}
