@@ -191,7 +191,6 @@ resource "google_kms_key_ring_iam_binding" "vault_iam_kms_binding" {
      "serviceAccount:${google_service_account.vault_kms_service_account.email}",
    ]
 }
-}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # CREATE FIREWALL RULES
