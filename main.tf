@@ -176,7 +176,7 @@ module "nomad_clients" {
   assign_public_ip_addresses = true
 
   # These inbound clients need only receive requests from Nomad Server and Consul
-  allowed_inbound_cidr_blocks_http = []
+  allowed_inbound_cidr_blocks_http = ["0.0.0.0/0"]
   allowed_inbound_tags_http = ["${var.consul_server_cluster_name}", "${var.nomad_client_cluster_name}"]
   allowed_inbound_tags_rpc = ["${var.consul_server_cluster_name}", "${var.nomad_client_cluster_name}"]
   allowed_inbound_tags_serf = ["${var.consul_server_cluster_name}", "${var.nomad_client_cluster_name}"]
