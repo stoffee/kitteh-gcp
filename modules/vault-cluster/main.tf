@@ -166,7 +166,6 @@ resource "google_compute_instance_template" "vault_private" {
   lifecycle {
     create_before_destroy = true
   }
-}
 
 # Create a KMS key ring
  resource "google_kms_key_ring" "key_ring" {
@@ -191,6 +190,7 @@ resource "google_kms_key_ring_iam_binding" "vault_iam_kms_binding" {
    members = [
      "serviceAccount:${google_service_account.vault_kms_service_account.email}",
    ]
+}
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
