@@ -57,7 +57,7 @@ resource "google_compute_instance_template" "vault_private" {
   tags                    = ["${concat(list(var.cluster_tag_name), var.custom_tags)}"]
  # metadata_startup_script = "${var.startup_script}"
   metadata_startup_script = <<SCRIPT
-    sudo touch //usr/local/src/boogers
+    sudo touch /usr/local/src/boogers
     readonly VAULT_TLS_CERT_FILE="/opt/vault/tls/vault.crt.pem"
     readonly VAULT_TLS_KEY_FILE="/opt/vault/tls/vault.key.pem"
     /opt/consul/bin/run-consul --client --cluster-tag-name "${var.cluster_tag_name}"
