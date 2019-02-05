@@ -73,6 +73,20 @@ variable "consul_server_source_image" {
   description = "The Google Image used to launch each node in the Consul Server cluster."
 }
 
+
+variable "crypto_key" {
+  description = "crypto_key"
+}
+
+variable "keyring_location" {
+  description = "keyring_location"
+}
+
+variable "key_ring" {
+  description = "key_ring"
+}
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # These parameters have reasonable defaults.
