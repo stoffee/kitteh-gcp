@@ -16,7 +16,7 @@
     "project_id": "{{user `project_id`}}",
     "source_image_family": "ubuntu-1604-lts",
     "zone": "{{user `zone`}}",
-    "image_name": "vault-consul-{{isotime \"2006-01-02-030405\"}}",
+    "image_name": "vault-consul-cat-image-{{isotime \"2006-01-02-030405\"}}",
     "image_family": "vault-consul",
     "ssh_username": "ubuntu"
   }],
@@ -69,6 +69,16 @@
       "git clone --branch {{user `consul_module_version`}} https://github.com/hashicorp/terraform-google-consul.git /tmp/terraform-google-consul",
       "/tmp/terraform-google-consul/modules/install-consul/install-consul --version {{user `consul_version`}}",
       "/tmp/terraform-google-consul/modules/install-dnsmasq/install-dnsmasq"
+    ]
+  },{
+    "type": "shell",
+    "inline": [
+      "sudo apt install -y golang-go",
+      "sudo mkdir -p /usr/local/src/image-service && sudo mkdir -p /usr/local/src/cat-service && sudo chmod 777 /usr/local/src/*-service",
+      "git clone https://github.com/anners/image-search.git /usr/local/src/image-service",
+      "cd /usr/local/src/image-service; sudo go build; sudo cp image-service /usr/local/bin/",
+      "git clone https://github.com/anners/cat-service.git /usr/local/src/cat-service",
+      "cd /usr/local/src/cat-service; sudo go build; sudo cp cat-service /usr/local/bin/"
     ]
   }]
 }
