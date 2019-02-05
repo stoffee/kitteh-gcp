@@ -9,7 +9,7 @@ terraform {
 }
 
 resource "google_service_account" "vault_kms_service_account" {
-  account_id   = "cd-tf-svc-acct"
+  account_id   = "cd-vault-svc-acct"
   display_name = "Vault KMS for auto-unseal"
 }
 
