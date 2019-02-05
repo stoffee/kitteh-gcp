@@ -139,7 +139,7 @@ resource "google_compute_instance_template" "vault_private" {
 
   # For a full list of oAuth 2.0 Scopes, see https://developers.google.com/identity/protocols/googlescopes
   service_account {
-    email = "${google_service_account.vault_kms_service_account.email}"
+    email = "${local.service_account.email}"
 
     scopes = ["cloud-platform", "compute-rw", "storage-ro", "${concat(
       list(
