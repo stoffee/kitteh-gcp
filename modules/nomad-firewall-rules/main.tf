@@ -30,7 +30,7 @@ resource "google_compute_firewall" "allow_inbound_http" {
     ]
   }
 
-  source_ranges = ["0.0.0.0/0"]
+  source_ranges = "${var.allowed_inbound_cidr_blocks_http}"
   source_tags = "${var.allowed_inbound_tags_http}"
   target_tags = ["${var.cluster_tag_name}"]
 }

@@ -45,7 +45,7 @@ variable "serf_port" {
 variable "allowed_inbound_cidr_blocks_http" {
   description = "A list of CIDR-formatted IP address ranges from which the Compute Instances will allow connections to Nomad on the port specified by var.http_port."
   type = "list"
-  default = []
+  default = ["0.0.0.0/0"]
 }
 
 variable "allowed_inbound_tags_http" {
