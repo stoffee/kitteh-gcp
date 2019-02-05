@@ -41,6 +41,94 @@ resource "google_compute_region_instance_group_manager" "vault" {
   depends_on = ["google_compute_instance_template.vault_public", "google_compute_instance_template.vault_private"]
 }
 
+
+# Create the Instance Template that will be used to populate the Managed Instance Group.
+# NOTE: This Compute Instance Template is only created if var.assign_public_ip_addresses is false.
+resource "google_compute_instance_template" "vault_private" {
+  count = "${1 - var.assign_public_ip_addresses}"
+
+  name_prefix = "${var.cluster_name}"
+  description = "${var.cluster_description}"
+  project     = "${var.gcp_project_id}"
+
+  instance_description = "${var.cluster_description}"
+  machine_type         = "${var.machine_type}"
+
+  tags                    = ["${concat(list(var.cluster_tag_name), var.custom_tags)}"]
+  metadata_startup_script = "${var.startup_script}"
+  metadata                = "${merge(map(var.metadata_key_name_for_cluster_size, var.cluster_size), var.custom_metadata)}"
+
+  scheduling {
+    automatic_restart   = true
+    on_host_maintenance = "MIGRATE"
+    preemptible         = false
+  }
+
+  disk {
+    boot         = true
+    auto_delete  = true
+    source_image = "${var.source_image}"
+    disk_size_gb = "${var.root_volume_disk_size_gb}"
+    disk_type    = "${var.root_volume_disk_type}"
+  }
+
+  network_interface {
+    network            = "${var.subnetwork_name != "" ? "" : var.network_name}"
+    subnetwork         = "${var.subnetwork_name != "" ? var.subnetwork_name : ""}"
+    subnetwork_project = "${var.network_project_id != "" ? var.network_project_id : var.gcp_project_id}"
+  }
+
+ # Service account with Cloud KMS roles for the Compute Instance
+  service_account {
+    email = "${google_service_account.vault_kms_service_account.email}"
+    scopes = ["cloud-platform", "compute-rw", "userinfo-email", "storage-ro"]
+  }
+
+  metadata_startup_script = <<SCRIPT
+    sudo touch /tmp/shitHEAD
+    sudo mkdir -p /test/vault
+    sudo echo -e '[Unit]\nDescription="HashiCorp Vault - A tool for managing secrets"\nDocumentation=https://www.vaultproject.io/docs/\nRequires=network-online.target\nAfter=network-online.target\n\n[Service]\nExecStart=/usr/bin/vault server -config=/test/vault/config.hcl\nExecReload=/bin/kill -HUP $MAINPID\nKillMode=process\nKillSignal=SIGINT\nRestart=on-failure\nRestartSec=5\n\n[Install]\nWantedBy=multi-user.target\n' > /lib/systemd/system/vault.service
+    sudo echo -e 'storage "file" {\n  path = "/opt/vault"\n}\n\nlistener "tcp" {\n  address     = "127.0.0.1:8200"\n  tls_disable = 1\n}\n\nseal "gcpckms" {\n  project     = "${var.gcp_project_id}"\n  region      = "${var.keyring_location}"\n  key_ring    = "${var.key_ring}"\n  crypto_key  = "${var.crypto_key}"\n}\n\ndisable_mlock = true\n' > /test/vault/config.hcl
+    sudo chmod 0664 /lib/systemd/system/vault.service
+    sudo echo -e 'alias v="vault"\nalias vualt="vault"\nexport VAULT_ADDR="http://127.0.0.1:8200"\n' > /etc/profile.d/vault.sh
+    source /etc/profile.d/vault.sh
+    sudo systemctl enable vault
+    sudo systemctl start vault
+  SCRIPT
+
+  # Per Terraform Docs (https://www.terraform.io/docs/providers/google/r/compute_instance_template.html#using-with-instance-group-manager),
+  # we need to create a new instance template before we can destroy the old one. Note that any Terraform resource on
+  # which this Terraform resource depends will also need this lifecycle statement.
+  lifecycle {
+    create_before_destroy = true
+  }
+
+# Create a KMS key ring
+ #resource "google_kms_key_ring" "key_ring" {
+ #  project  = "${var.gcp_project_id}"
+ #  name     = "${var.key_ring}"
+ #  location = "${var.keyring_location}"
+ #}
+
+# Create a crypto key for the key ring
+ #resource "google_kms_crypto_key" "crypto_key" {
+ #  name            = "${var.crypto_key}"
+ #  key_ring        = "${google_kms_key_ring.key_ring.self_link}"
+ #  rotation_period = "100000s"
+ #}
+
+# Add the service account to the Keyring
+resource "google_kms_key_ring_iam_binding" "vault_iam_kms_binding" {
+   # key_ring_id = "${google_kms_key_ring.key_ring.id}"
+   key_ring_id = "${var.gcp_project_id}/${var.keyring_location}/${var.key_ring}"
+   role = "roles/owner"
+
+   members = [
+     "serviceAccount:${google_service_account.vault_kms_service_account.email}",
+   ]
+}
+}
+
 # Create the Instance Template that will be used to populate the Managed Instance Group.
 # NOTE: This Compute Instance Template is only created if var.assign_public_ip_addresses is true.
 resource "google_compute_instance_template" "vault_public" {
@@ -104,92 +192,6 @@ resource "google_compute_instance_template" "vault_public" {
   lifecycle {
     create_before_destroy = true
   }
-}
-
-# Create the Instance Template that will be used to populate the Managed Instance Group.
-# NOTE: This Compute Instance Template is only created if var.assign_public_ip_addresses is false.
-resource "google_compute_instance_template" "vault_private" {
-  count = "${1 - var.assign_public_ip_addresses}"
-
-  name_prefix = "${var.cluster_name}"
-  description = "${var.cluster_description}"
-  project     = "${var.gcp_project_id}"
-
-  instance_description = "${var.cluster_description}"
-  machine_type         = "${var.machine_type}"
-
-  tags                    = ["${concat(list(var.cluster_tag_name), var.custom_tags)}"]
-  metadata_startup_script = "${var.startup_script}"
-  metadata                = "${merge(map(var.metadata_key_name_for_cluster_size, var.cluster_size), var.custom_metadata)}"
-
-  scheduling {
-    automatic_restart   = true
-    on_host_maintenance = "MIGRATE"
-    preemptible         = false
-  }
-
-  disk {
-    boot         = true
-    auto_delete  = true
-    source_image = "${var.source_image}"
-    disk_size_gb = "${var.root_volume_disk_size_gb}"
-    disk_type    = "${var.root_volume_disk_type}"
-  }
-
-  network_interface {
-    network            = "${var.subnetwork_name != "" ? "" : var.network_name}"
-    subnetwork         = "${var.subnetwork_name != "" ? var.subnetwork_name : ""}"
-    subnetwork_project = "${var.network_project_id != "" ? var.network_project_id : var.gcp_project_id}"
-  }
-
- # Service account with Cloud KMS roles for the Compute Instance
-  service_account {
-    email = "${google_service_account.vault_kms_service_account.email}"
-    scopes = ["cloud-platform", "compute-rw", "userinfo-email", "storage-ro"]
-  }
-
-  metadata_startup_script = <<SCRIPT
-    sudo mkdir -p /test/vault
-    sudo echo -e '[Unit]\nDescription="HashiCorp Vault - A tool for managing secrets"\nDocumentation=https://www.vaultproject.io/docs/\nRequires=network-online.target\nAfter=network-online.target\n\n[Service]\nExecStart=/usr/bin/vault server -config=/test/vault/config.hcl\nExecReload=/bin/kill -HUP $MAINPID\nKillMode=process\nKillSignal=SIGINT\nRestart=on-failure\nRestartSec=5\n\n[Install]\nWantedBy=multi-user.target\n' > /lib/systemd/system/vault.service
-    sudo echo -e 'storage "file" {\n  path = "/opt/vault"\n}\n\nlistener "tcp" {\n  address     = "127.0.0.1:8200"\n  tls_disable = 1\n}\n\nseal "gcpckms" {\n  project     = "${var.gcp_project_id}"\n  region      = "${var.keyring_location}"\n  key_ring    = "${var.key_ring}"\n  crypto_key  = "${var.crypto_key}"\n}\n\ndisable_mlock = true\n' > /test/vault/config.hcl
-    sudo chmod 0664 /lib/systemd/system/vault.service
-    sudo echo -e 'alias v="vault"\nalias vualt="vault"\nexport VAULT_ADDR="http://127.0.0.1:8200"\n' > /etc/profile.d/vault.sh
-    source /etc/profile.d/vault.sh
-    sudo systemctl enable vault
-    sudo systemctl start vault
-  SCRIPT
-
-  # Per Terraform Docs (https://www.terraform.io/docs/providers/google/r/compute_instance_template.html#using-with-instance-group-manager),
-  # we need to create a new instance template before we can destroy the old one. Note that any Terraform resource on
-  # which this Terraform resource depends will also need this lifecycle statement.
-  lifecycle {
-    create_before_destroy = true
-  }
-
-# Create a KMS key ring
- #resource "google_kms_key_ring" "key_ring" {
- #  project  = "${var.gcp_project_id}"
- #  name     = "${var.key_ring}"
- #  location = "${var.keyring_location}"
- #}
-
-# Create a crypto key for the key ring
- #resource "google_kms_crypto_key" "crypto_key" {
- #  name            = "${var.crypto_key}"
- #  key_ring        = "${google_kms_key_ring.key_ring.self_link}"
- #  rotation_period = "100000s"
- #}
-
-# Add the service account to the Keyring
-resource "google_kms_key_ring_iam_binding" "vault_iam_kms_binding" {
-   # key_ring_id = "${google_kms_key_ring.key_ring.id}"
-   key_ring_id = "${var.gcp_project_id}/${var.keyring_location}/${var.key_ring}"
-   role = "roles/owner"
-
-   members = [
-     "serviceAccount:${google_service_account.vault_kms_service_account.email}",
-   ]
-}
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
