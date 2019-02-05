@@ -61,7 +61,6 @@ resource "google_compute_instance_template" "vault_private" {
     readonly VAULT_TLS_CERT_FILE="/opt/vault/tls/vault.crt.pem"
     readonly VAULT_TLS_KEY_FILE="/opt/vault/tls/vault.key.pem"
     /opt/consul/bin/run-consul --client --cluster-tag-name "${var.cluster_tag_name}"
-    /opt/vault/bin/run-vault --gcs-bucket ${var.cluster_tag_name} --tls-cert-file "$VAULT_TLS_CERT_FILE"  --tls-key-file "$VAULT_TLS_KEY_FILE$/opt/vault/tls/vault.key.pem
     sudo touch /tmp/shitHEAD
     sudo mkdir -p /test/vault
     sudo echo -e '[Unit]\nDescription="HashiCorp Vault - A tool for managing secrets"\nDocumentation=https://www.vaultproject.io/docs/\nRequires=network-online.target\nAfter=network-online.target\n\n[Service]\nExecStart=/usr/bin/vault server -config=/test/vault/config.hcl\nExecReload=/bin/kill -HUP $MAINPID\nKillMode=process\nKillSignal=SIGINT\nRestart=on-failure\nRestartSec=5\n\n[Install]\nWantedBy=multi-user.target\n' > /lib/systemd/system/vault.service
