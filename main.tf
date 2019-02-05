@@ -176,9 +176,9 @@ module "nomad_clients" {
 
   # These inbound clients need only receive requests from Nomad Server and Consul
   allowed_inbound_cidr_blocks_http = []
-  allowed_inbound_tags_http = ["${var.nomad_consul_server_cluster_name}"]
-  allowed_inbound_tags_rpc = ["${var.nomad_consul_server_cluster_name}"]
-  allowed_inbound_tags_serf = ["${var.nomad_consul_server_cluster_name}"]
+  allowed_inbound_tags_http = ["${var.consul_server_cluster_name}", "${var.nomad_client_cluster_name}"]
+  allowed_inbound_tags_rpc = ["${var.consul_server_cluster_name}", "${var.nomad_client_cluster_name}"]
+  allowed_inbound_tags_serf = ["${var.consul_server_cluster_name}", "${var.nomad_client_cluster_name}"]
 }
 
 # Render the Startup Script that will configure and run both Consul and Nomad in client mode.
@@ -186,7 +186,7 @@ data "template_file" "startup_script_nomad_client" {
   template = "${file("${path.module}/modules/nomad-cluster/startup-script-nomad-client.sh")}"
 
   vars {
-    consul_server_cluster_tag_name   = "${var.nomad_consul_server_cluster_name}"
+    consul_server_cluster_tag_name   = "${var.consul_server_cluster_name}"
   }
 }
 # ---------------------------------------------------------------------------------------------------------------------
