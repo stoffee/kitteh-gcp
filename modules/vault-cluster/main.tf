@@ -104,18 +104,18 @@ resource "google_compute_instance_template" "vault_private" {
   }
 
 # Create a KMS key ring
- #resource "google_kms_key_ring" "key_ring" {
- #  project  = "${var.gcp_project_id}"
- #  name     = "${var.key_ring}"
- #  location = "${var.keyring_location}"
- #}
+ resource "google_kms_key_ring" "key_ring" {
+   project  = "${var.gcp_project_id}"
+   name     = "${var.key_ring}"
+   location = "${var.keyring_location}"
+ }
 
 # Create a crypto key for the key ring
- #resource "google_kms_crypto_key" "crypto_key" {
- #  name            = "${var.crypto_key}"
- #  key_ring        = "${google_kms_key_ring.key_ring.self_link}"
- #  rotation_period = "100000s"
- #}
+ resource "google_kms_crypto_key" "crypto_key" {
+   name            = "${var.crypto_key}"
+   key_ring        = "${google_kms_key_ring.key_ring.self_link}"
+   rotation_period = "100000s"
+ }
 
 # Add the service account to the Keyring
 resource "google_kms_key_ring_iam_binding" "vault_iam_kms_binding" {
