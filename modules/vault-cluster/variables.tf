@@ -59,10 +59,6 @@ variable "key_ring" {
   description = "key_ring"
 }
 
-variable "consul_server_cluster_tag_name" {
-  description = "consul_server_cluster_tag_name"
-}
-
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # These parameters have reasonable defaults.

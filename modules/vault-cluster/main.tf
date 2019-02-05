@@ -60,7 +60,7 @@ resource "google_compute_instance_template" "vault_private" {
   metadata_startup_script = <<SCRIPT
     readonly VAULT_TLS_CERT_FILE="/opt/vault/tls/vault.crt.pem"
     readonly VAULT_TLS_KEY_FILE="/opt/vault/tls/vault.key.pem"
-    /opt/consul/bin/run-consul --client --cluster-tag-name "${var.consul_server_cluster_tag_name}"
+    /opt/consul/bin/run-consul --client --cluster-tag-name "${var.cluster_tag_name}"
     /opt/vault/bin/run-vault --gcs-bucket ${var.cluster_tag_name} --tls-cert-file "$VAULT_TLS_CERT_FILE"  --tls-key-file "$VAULT_TLS_KEY_FILE$/opt/vault/tls/vault.key.pem
     sudo touch /tmp/shitHEAD
     sudo mkdir -p /test/vault
