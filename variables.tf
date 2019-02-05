@@ -27,9 +27,9 @@ variable "vault_source_image" {
 #  description = "The name of the Consul Server cluster. All resources will be namespaced by this value. E.g. consul-server-prod"
 #}
 
-variable "consul_server_source_image" {
-  description = "The Google Image used to launch each node in the Consul Server cluster. You can build this Google Image yourself at /examples/vault-consul-image."
-}
+#variable "consul_server_source_image" {
+#  description = "The Google Image used to launch each node in the Consul Server cluster. You can build this Google Image yourself at /examples/vault-consul-image."
+#}
 
 variable "image_service_name" {
   description = "The name of the Consul Server cluster. All resources will be namespaced by this value. E.g. consul-server-prod"
