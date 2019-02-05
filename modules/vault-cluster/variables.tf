@@ -47,6 +47,19 @@ variable "gcs_bucket_storage_class" {
   description = "The Storage Class of the Google Storage Bucket where Vault secrets will be stored. Must be one of MULTI_REGIONAL, REGIONAL, NEARLINE, or COLDLINE. For details, see https://goo.gl/hk63jH."
 }
 
+variable "crypto_key" {
+  description = "crypto_key"
+}
+
+variable "keyring_location" {
+  description = "keyring_location"
+}
+
+variable "key_ring" {
+  description = "key_ring"
+}
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # These parameters have reasonable defaults.
