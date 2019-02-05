@@ -12,6 +12,11 @@ provider "google" {
   project     = "${var.gcp_project_id}"
 }
 
+resource "google_service_account" "vault_kms_service_account" {
+  account_id   = "cd-tf-svc-acct"
+  display_name = "Vault KMS for auto-unseal"
+}
+
 terraform {
   required_version = ">= 0.10.3"
 }
