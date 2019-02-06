@@ -68,6 +68,9 @@ data "template_file" "startup_script_vault" {
   vars {
     consul_cluster_tag_name = "${var.consul_server_cluster_name}"
     vault_cluster_tag_name  = "${var.vault_cluster_name}"
+    gcp_project             = "${var.gcp_project_id}"
+    keyring_location        = "${var.keyring_location}"
+    key_ring                = "${var.key_ring}"
 
     enable_vault_ui = "${var.enable_vault_ui ? "--enable-ui" : ""}"
   }
