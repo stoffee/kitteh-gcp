@@ -39,7 +39,7 @@ module "vault_cluster" {
   key_ring         = "${var.key_ring}"
 
   source_image   = "${var.vault_source_image}"
-  startup_script = "${data.template_file.startup_script_vaultstartup_script_vault.rendered}"
+  startup_script = "${data.template_file.startup_script_vault.rendered}"
 
   gcs_bucket_name          = "${var.vault_cluster_name}"
   gcs_bucket_location      = "${var.gcs_bucket_location}"
