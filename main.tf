@@ -39,7 +39,7 @@ module "vault_cluster" {
   key_ring         = "${var.key_ring}"
 
   source_image   = "${var.vault_source_image}"
-  startup_script = "${data.template_file.startup_script_vault.rendered}"
+  startup_script = "${data.template_file.startup_script_vaultstartup_script_vault.rendered}"
 
   gcs_bucket_name          = "${var.vault_cluster_name}"
   gcs_bucket_location      = "${var.gcs_bucket_location}"
@@ -63,7 +63,7 @@ module "vault_cluster" {
 
 # Render the Startup Script that will run on each Vault Instance on boot. This script will configure and start Vault.
 data "template_file" "startup_script_vault" {
-  template = "${file("${path.module}/modules/vault-cluster/startup-script-vault.sh")}"
+  template = "${file("${path.module}/modules/vault-cluster/startup-script-vault.tpl")}"
 
   vars {
     consul_cluster_tag_name = "${var.consul_server_cluster_name}"
