@@ -71,6 +71,7 @@ data "template_file" "startup_script_vault" {
     gcloud_project          = "${var.gcp_project_id}"
     keyring_location        = "${var.keyring_location}"
     key_ring                = "${var.key_ring}"
+    crypto_key              = "${var.crypto_key}"
 
     enable_vault_ui = "${var.enable_vault_ui ? "--enable-ui" : ""}"
   }
