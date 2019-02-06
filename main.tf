@@ -68,7 +68,7 @@ data "template_file" "startup_script_vault" {
   vars {
     consul_cluster_tag_name = "${var.consul_server_cluster_name}"
     vault_cluster_tag_name  = "${var.vault_cluster_name}"
-    gcp_project             = "${var.gcp_project_id}"
+    gcloud_project          = "${var.gcp_project_id}"
     keyring_location        = "${var.keyring_location}"
     key_ring                = "${var.key_ring}"
 
