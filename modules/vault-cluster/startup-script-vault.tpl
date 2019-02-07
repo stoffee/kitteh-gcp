@@ -22,6 +22,7 @@ readonly VAULT_TLS_KEY_FILE="/opt/vault/tls/vault.key.pem"
 #curl -s -L -o ~/vault.zip https://releases.hashicorp.com/vault/1.0.2/vault_1.0.2_linux_amd64.zip
 #sudo unzip ~/vault.zip
 #sudo install -c -m 0755 vault /usr/bin
+ln -s /usr/local/bin/vault /usr/bin/vault
 mkdir -p /test/vault
 echo "GCLOUD_PROJECT = ${gcloud_project}" > /test/vault/thisshitwhac
 echo -e '[Unit]\nDescription="HashiCorp Vault - A tool for managing secrets"\nDocumentation=https://www.vaultproject.io/docs/\nRequires=network-online.target\nAfter=network-online.target\n\n[Service]\nExecStart=/usr/bin/vault server -config=/test/vault/config.hcl\nExecReload=/bin/kill -HUP $MAINPID\nKillMode=process\nKillSignal=SIGINT\nRestart=on-failure\nRestartSec=5\n\n[Install]\nWantedBy=multi-user.target\n' > /lib/systemd/system/vault.service
