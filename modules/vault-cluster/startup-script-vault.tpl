@@ -24,7 +24,7 @@ readonly VAULT_TLS_KEY_FILE="/opt/vault/tls/vault.key.pem"
 #sudo install -c -m 0755 vault /usr/bin
 ln -s /usr/local/bin/vault /usr/bin/vault
 mkdir -p /test/vault
-echo "GCLOUD_PROJECT = ${gcloud_project}" > /test/vault/thisshitwhac
+export VAULT_SEAL_TYPE=gcpckms
 echo -e '[Unit]\nDescription="HashiCorp Vault - A tool for managing secrets"\nDocumentation=https://www.vaultproject.io/docs/\nRequires=network-online.target\nAfter=network-online.target\n\n[Service]\nExecStart=/usr/bin/vault server -config=/test/vault/config.hcl\nExecReload=/bin/kill -HUP $MAINPID\nKillMode=process\nKillSignal=SIGINT\nRestart=on-failure\nRestartSec=5\n\n[Install]\nWantedBy=multi-user.target\n' > /lib/systemd/system/vault.service
 echo -e 'storage "file" {\n  path = "/opt/vault"\n}\n\nlistener "tcp" {\n  address     = "127.0.0.1:8200"\n  tls_disable = 1\n}\n\nseal "gcpckms" {\n  project     = "${gcloud_project}"\n  region      = "${keyring_location}"\n  key_ring    = "${key_ring}"\n  crypto_key  = "${crypto_key}"\n}\n\ndisable_mlock = true\n' > /test/vault/config.hcl
 chmod 0664 /lib/systemd/system/vault.service
