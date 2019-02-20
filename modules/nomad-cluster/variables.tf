@@ -29,6 +29,7 @@ variable "source_image" {
 
 variable "startup_script" {
   description = "A Startup Script to execute when the server first boots. We recommend passing in a bash script that executes the run-vault script, which should have been installed in the Vault Google Image by the install-vault module."
+  default = "sudo apt install -y docker.io"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
