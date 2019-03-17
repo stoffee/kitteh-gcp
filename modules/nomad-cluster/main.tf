@@ -41,7 +41,7 @@ resource "google_compute_instance_template" "nomad_public" {
 
   name_prefix = "${var.cluster_name}"
   description = "${var.cluster_description}"
-  project = "chris-dunlap-hgcp"
+  project = "hackathon-skillitor"
 
   instance_description = "${var.cluster_description}"
   machine_type         = "${var.machine_type}"
